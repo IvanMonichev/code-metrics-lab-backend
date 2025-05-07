@@ -1,22 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { corsConfig } from './config/cors.config';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { swaggerConfig } from './config/swagger.config';
+import { SwaggerModule as SW } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Setup CORS
   if (process.env.CORS_ENABLED === 'true') {
     app.enableCors(corsConfig());
   }
 
-  const config = new DocumentBuilder()
-    .setTitle('Code Metrics Lab API')
-    .setDescription('Backend part of Code Metrics Lab')
-    .setVersion('1.0')
-    .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, documentFactory);
+  // Setup Swagger Documentation
+  const documentFactory = () => SW.createDocument(app, swaggerConfig);
+  SW.setup('docs', app, documentFactory);
 
+  // Run the application
   await app.listen(process.env.PORT ?? 4000);
 }
 
